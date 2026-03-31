@@ -1,0 +1,149 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "Stores user information and roles.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["seller", "affiliate", "admin"] },
+        "bankInfo": {
+          "type": "object",
+          "properties": {
+            "bankName": { "type": "string" },
+            "accountNumber": { "type": "string" },
+            "accountHolder": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "products": {
+      "title": "Product",
+      "description": "Products uploaded by sellers.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sellerId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "commissionPercentage": { "type": "number" },
+        "stock": { "type": "integer" },
+        "category": { "type": "string" },
+        "media": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["image", "video"] },
+              "url": { "type": "string" }
+            }
+          }
+        },
+        "marketingKit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["image", "video", "banner", "document"] },
+              "url": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sellerId", "name", "price", "commissionPercentage", "stock"]
+    },
+    "orders": {
+      "title": "Order",
+      "description": "Customer orders and tracking.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "sellerId": { "type": "string" },
+        "affiliateId": { "type": "string" },
+        "buyerInfo": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string", "format": "email" },
+            "whatsapp": { "type": "string" },
+            "address": { "type": "string" }
+          }
+        },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "paid", "processing", "shipped", "delivered", "completed", "cancelled"] },
+        "shippingInfo": {
+          "type": "object",
+          "properties": {
+            "courier": { "type": "string" },
+            "trackingNumber": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "sellerId", "buyerInfo", "totalAmount", "status"]
+    },
+    "wallets": {
+      "title": "Wallet",
+      "description": "User balance and pending funds.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "balance": { "type": "number" },
+        "pendingBalance": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "balance", "pendingBalance"]
+    },
+    "withdrawals": {
+      "title": "Withdrawal Request",
+      "description": "Requests to withdraw funds from wallet.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "amount": { "type": "number" },
+        "bankAccount": {
+          "type": "object",
+          "properties": {
+            "bankName": { "type": "string" },
+            "accountNumber": { "type": "string" },
+            "accountHolder": { "type": "string" }
+          }
+        },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "amount", "bankAccount", "status"]
+    },
+    "transactions": {
+      "title": "Transaction",
+      "description": "Ledger of all financial movements.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "type": { "type": "string", "enum": ["sale", "commission", "platform_fee", "withdrawal"] },
+        "amount": { "type": "number" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "amount", "userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": { "schema": "users", "description": "User profiles." },
+    "/products/{productId}": { "schema": "products", "description": "Marketplace products." },
+    "/orders/{orderId}": { "schema": "orders", "description": "Sales orders." },
+    "/wallets/{userId}": { "schema": "wallets", "description": "User wallets." },
+    "/withdrawals/{withdrawalId}": { "schema": "withdrawals", "description": "Withdrawal requests." },
+    "/transactions/{transactionId}": { "schema": "transactions", "description": "Financial transactions." }
+  }
+}
